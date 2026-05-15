@@ -52,20 +52,13 @@ Fellas – Daily household assistant application.
 
 The application is built using modern technologies to ensure high performance, security, and responsiveness.
 
-Frontend: React
- 18+ with Vite
- for fast rendering and optimized development workflow.
-Styling: Tailwind CSS
- with a futuristic yet user-friendly Glassmorphism design implementation.
-Backend / Database: Firebase Firestore
- for real-time data synchronization across devices.
-Authentication: Firebase Authentication
- for secure user management and data protection.
-Animations: Motion (Framer Motion)
- for smooth and interactive user experiences.
-Icons: Lucide React
- for clean and consistent UI visualization.
-Security Rules: Advanced database protection using the Eight Pillars of Hardened Rules approach to prevent unauthorized data access.
+* **Frontend**: [React 18+](https://reactjs.org/) with [Vite](https://vitejs.dev/) sebagai build tool untuk kecepatan rendering maksimal. *
+* **Styling**: [Tailwind CSS](https://tailwindcss.com/) with implementation **Glassmorphism** to be more futuristic but still user-friendly. *
+* **Backend/Database**: [Firebase Firestore](https://firebase.google.com/docs/firestore) for data sync and real-time sync between devices. *
+* **Authentication**: [Firebase Auth](https://firebase.google.com/docs/auth) for user data safety. *
+* **Animations**: [Motion (Framer Motion)](https://motion.dev/) for smooth and interactive user experience. *
+* **Icons**: [Lucide React](https://lucide.dev/) for sharp and consistent UI visualisation.*
+* **Security Rules**: High level database security using *Eight Pillars of Hardened Rules* to prevent unauthorized data access.*
 
 
 ## 💡 Competition Vision
