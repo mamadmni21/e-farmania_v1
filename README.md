@@ -66,8 +66,3 @@ Security Rules: Advanced database protection using the Eight Pillars of Hardened
 💡 Competition Vision
 
 E-Farmania is built as a real solution for Indonesia’s food security challenges. By connecting producer-side data directly with consumer health monitoring applications such as Lapaq and Pregna, we create a supply chain ecosystem that is not only economically efficient but also contributes directly to improving public health quality at scale.
-
-📌 Submission Information
-
-Submission for: [Competition / Event Name]
-*Developed with ❤️ by [Your Team Name] Team
