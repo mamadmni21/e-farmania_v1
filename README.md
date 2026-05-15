@@ -8,7 +8,7 @@ The platform not only supports daily farming operations, but also emphasizes tra
 ## 🚀 Main Features
 ### 1. Multi-Role Team Management
 
-A hierarchical access control system for Owners, Supervisors, and Employees. Enables real-time collaboration in monitoring inventory, sales, and livestock health.
+A hierarchical access control system for Owners, Supervisors, Customers and Employees. Enables real-time collaboration in monitoring inventory, sales, and livestock health.
 
 ### 2. Commerce Hub (Digital Marketplace)
 
