@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL HELPERS ---
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+
+    function isOwnerOrTeam(ownerId) {
+      let userData = getUserData(request.auth.uid);
+      return isSignedIn() && (ownerId == request.auth.uid || userData.invitedBy == ownerId);
+    }
+
+    // --- ENTITY VALIDATIONS ---
+    function isValidUser(data) {
+      return data.uid == request.auth.uid 
+        && data.email is string && data.email.size() <= 100
+        && data.role in ['Pemilik', 'Supervisor', 'Karyawan', 'Customer']
+        && (!('referralCode' in data) || data.referralCode is string)
+        && (!('invitedBy' in data) || data.invitedBy is string);
+    }
+
+    function isValidLand(data) {
+      return data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() <= 100
+        && data.location is map && data.location.lat is number && data.location.lng is number;
+    }
+
+    function isValidLivestock(data) {
+      return data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() <= 100
+        && data.type in ['Ayam', 'Sapi', 'Kambing', 'Burung', 'Ikan', 'Lainnya']
+        && data.quantity is number && data.quantity >= 0;
+    }
+
+    // --- MATCH BLOCKS ---
+
+    match /test/connection {
+      allow read: if true;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn(); // Referral lookup
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming());
+      allow update: if isSignedIn() && request.auth.uid == userId 
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email'])
+        && isValidUser(incoming());
+    }
+
+    match /lands/{landId} {
+      allow read: if isOwnerOrTeam(existing().ownerId);
+      allow create: if isVerified() && getUserData(request.auth.uid).role == 'Pemilik' && isValidLand(incoming());
+      allow update: if isVerified() && existing().ownerId == request.auth.uid && isValidLand(incoming());
+      allow delete: if isVerified() && existing().ownerId == request.auth.uid;
+
+      match /sensors/{sensorId} {
+        allow read: if isOwnerOrTeam(get(/databases/$(database)/documents/lands/$(landId)).data.ownerId);
+        allow create: if isOwnerOrTeam(get(/databases/$(database)/documents/lands/$(landId)).data.ownerId);
+      }
+
+      match /logs/{logId} {
+        allow read: if isOwnerOrTeam(get(/databases/$(database)/documents/lands/$(landId)).data.ownerId);
+        allow create: if isOwnerOrTeam(get(/databases/$(database)/documents/lands/$(landId)).data.ownerId) && incoming().workerId == request.auth.uid;
+      }
+    }
+
+    match /inventory/{itemId} {
+      allow read: if isOwnerOrTeam(existing().ownerId);
+      allow create: if isVerified() && incoming().ownerId == request.auth.uid;
+      allow update, delete: if isVerified() && existing().ownerId == request.auth.uid;
+    }
+
+    match /products/{productId} {
+      allow read: if isOwnerOrTeam(existing().ownerId);
+      allow write: if isVerified() && (resource == null || existing().ownerId == request.auth.uid);
+    }
+
+    match /buyers/{buyerId} {
+      allow read: if isOwnerOrTeam(existing().ownerId);
+      allow write: if isVerified() && (resource == null || existing().ownerId == request.auth.uid);
+    }
+
+    match /transactions/{txId} {
+      allow read: if isOwnerOrTeam(existing().ownerId) || existing().buyerId == request.auth.uid;
+      allow write: if isVerified() && (resource == null || existing().ownerId == request.auth.uid);
+    }
+
+    match /livestock/{livestockId} {
+      allow read: if isOwnerOrTeam(existing().ownerId);
+      allow create: if isVerified() && (incoming().ownerId == request.auth.uid || getUserData(request.auth.uid).invitedBy == incoming().ownerId) && isValidLivestock(incoming());
+      allow update, delete: if isVerified() && isOwnerOrTeam(existing().ownerId);
+    }
+
+    function isValidShopProduct(data) {
+      return data.ownerId == request.auth.uid
+        && data.name is string && data.name.size() <= 100
+        && data.price is number && data.price >= 0
+        && data.storeType in ['Peternakan', 'Pertanian', 'Makanan']
+        && (!('isSafeForKids' in data) || data.isSafeForKids is bool)
+        && (!('isSafeForPregnancy' in data) || data.isSafeForPregnancy is bool)
+        && (!('nutritionDetails' in data) || data.nutritionDetails is string);
+    }
+
+    match /shop_products/{productId} {
+      allow read: if isSignedIn();
+      allow create: if isVerified() && isValidShopProduct(incoming());
+      allow update, delete: if isVerified() && existing().ownerId == request.auth.uid && isValidShopProduct(incoming());
+    }
+
+    match /waste_management/{wasteId} {
+      allow read: if isSignedIn();
+      allow create: if isVerified() && incoming().ownerId == request.auth.uid;
+      allow update, delete: if isVerified() && existing().ownerId == request.auth.uid;
+    }
+  }
+}

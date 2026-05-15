@@ -1,0 +1,6 @@
+{
+  "name": "E-Farmania by Sepuh",
+  "description": "Platform pengelolaan pertanian cerdas untuk petani Indonesia, mencakup monitoring IoT, manajemen tim, dan panduan budidaya.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["IoT Monitoring", "Team Management", "Agricultural Guidance"]
+}

@@ -1,0 +1,234 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Information about a user including their role and team association.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["Pemilik", "Supervisor", "Karyawan", "Customer"] },
+        "referralCode": { "type": "string" },
+        "invitedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "role", "email"]
+    },
+    "Land": {
+      "title": "Agricultural Land",
+      "description": "Specific land area managed by a team.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "cropType": { "type": "string" },
+        "location": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "name", "location"]
+    },
+    "SensorData": {
+      "title": "IoT Sensor Data",
+      "description": "Real-time or historical data from sensors in the land.",
+      "type": "object",
+      "properties": {
+        "landId": { "type": "string" },
+        "temperature": { "type": "number" },
+        "humidity": { "type": "number" },
+        "rainfall": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["landId", "temperature", "humidity", "timestamp"]
+    },
+    "OperationalLog": {
+      "title": "Worker Operational Log",
+      "description": "Logs of work done (fertilizing, pest control, observation) by employees.",
+      "type": "object",
+      "properties": {
+        "landId": { "type": "string" },
+        "workerId": { "type": "string" },
+        "type": { "type": "string", "enum": ["pemupukan", "pestisida", "observasi"] },
+        "details": { "type": "string" },
+        "observation": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["landId", "workerId", "type", "timestamp"]
+    },
+    "InventoryItem": {
+      "title": "Inventory Item",
+      "description": "Tools or materials kept in stock (tools,肥料, pesticides, etc).",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["alat", "pupuk", "pestisida", "herbisida", "lainnya"] },
+        "stock": { "type": "number" },
+        "unit": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "name", "category", "stock", "unit"]
+    },
+    "Product": {
+      "title": "Saleable Product",
+      "description": "Harvested goods or processed products for sale.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "stock": { "type": "number" },
+        "price": { "type": "number" },
+        "unit": { "type": "string" },
+        "image": { "type": "string" }
+      },
+      "required": ["ownerId", "name", "stock", "price", "unit"]
+    },
+    "Buyer": {
+      "title": "Buyer Information",
+      "description": "Contact details of customers.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" }
+      },
+      "required": ["ownerId", "name", "phone"]
+    },
+    "Transaction": {
+      "title": "Sales Transaction",
+      "description": "Records of products sold.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "buyerId": { "type": "string" },
+        "productId": { "type": "string" },
+        "quantity": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "completed", "cancelled"] }
+      },
+      "required": ["ownerId", "buyerId", "productId", "quantity", "totalPrice", "timestamp"]
+    },
+    "Livestock": {
+      "title": "Livestock Management",
+      "description": "Records of animals kept for farming purposes.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["Ayam", "Sapi", "Kambing", "Burung", "Ikan", "Lainnya"] },
+        "location": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        },
+        "cageCapacity": { "type": "string" },
+        "quantity": { "type": "number" },
+        "maleQuantity": { "type": "number" },
+        "femaleQuantity": { "type": "number" },
+        "healthStatus": { "type": "string", "enum": ["Optimal", "Warning", "Critical"] },
+        "feedLevel": { "type": "number" },
+        "lastVaccination": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "name", "type", "location", "maleQuantity", "femaleQuantity", "cageCapacity"]
+    },
+    "ShopProduct": {
+      "title": "Shop Product",
+      "description": "Global marketplace products.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "subCategory": { "type": "string" },
+        "price": { "type": "number" },
+        "unit": { "type": "string" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "storeType": { "type": "string", "enum": ["Peternakan", "Pertanian", "Makanan"] },
+        "isWaste": { "type": "boolean" },
+        "isSafeForKids": { "type": "boolean" },
+        "isSafeForPregnancy": { "type": "boolean" },
+        "nutritionDetails": { "type": "string" },
+        "deliveryOptions": { "type": "array" }
+      },
+      "required": ["ownerId", "name", "price", "storeType"]
+    },
+    "WasteManagement": {
+      "title": "Waste Management",
+      "description": "Inventory of organic waste per farm area.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "parentId": { "type": "string" },
+        "type": { "type": "string", "enum": ["raw", "cooked", "animalPoop", "foliage", "other"] },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "pricePerUnit": { "type": "number" },
+        "isForSale": { "type": "boolean" },
+        "deliveryOptions": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "parentId", "type", "quantity"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profile data."
+    },
+    "lands/{landId}": {
+      "schema": "Land",
+      "description": "Agricultural land records."
+    },
+    "lands/{landId}/sensors/{sensorId}": {
+      "schema": "SensorData",
+      "description": "IoT data per land."
+    },
+    "lands/{landId}/logs/{logId}": {
+      "schema": "OperationalLog",
+      "description": "Historical operations on the land."
+    },
+    "inventory/{itemId}": {
+      "schema": "InventoryItem",
+      "description": "Inventory management items."
+    },
+    "products/{productId}": {
+      "schema": "Product",
+      "description": "Products for sale."
+    },
+    "buyers/{buyerId}": {
+      "schema": "Buyer",
+      "description": "Buyers/Customers database."
+    },
+    "transactions/{txId}": {
+      "schema": "Transaction",
+      "description": "Sales records."
+    },
+    "livestock/{livestockId}": {
+      "schema": "Livestock",
+      "description": "Livestock records."
+    },
+    "shop_products/{productId}": {
+      "schema": "ShopProduct",
+      "description": "Marketplace products for agriculture and livestock."
+    },
+    "waste_management/{wasteId}": {
+      "schema": "WasteManagement",
+      "description": "Inventory of organic waste per farm area."
+    }
+  }
+}
